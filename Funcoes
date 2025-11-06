@@ -1,0 +1,56 @@
+CREATE DATABASE resgis2;
+USE resgis2;
+
+CREATE TABLE Alunos (
+    aluno_id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE Notas (
+    nota_id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT,
+    disciplina VARCHAR(50),
+    nota1 INT,
+    nota2 INT,
+    nota3 INT,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(aluno_id)
+);
+
+
+
+INSERT INTO Alunos (nome) VALUES
+('Ana Silva'),
+('Bruno Costa'),
+('Carla Dias');
+
+
+INSERT INTO Notas (aluno_id, disciplina, nota1, nota2, nota3) VALUES
+(1, 'Matemática', 80, 90, 75),
+(1, 'Português', 85, 88, 92),
+(2, 'Matemática', 70, 65, 72),
+(3, 'História', 95, 90, 100);
+
+DELIMITER //
+CREATE FUNCTION calcularMedia (nota1 INT, nota2 INT, nota3 INT)
+RETURNS DECIMAL(5,2) DETERMINISTIC
+BEGIN
+    DECLARE media DECIMAL(5,2);
+    SET media = (nota1 + nota2 + nota3) / 3.0;
+    RETURN media;
+END //
+DELIMITER ;
+
+SELECT calcularMedia(80, 90, 75) AS media_resultado;
+
+SELECT
+    A.nome,
+    N.disciplina,
+    N.nota1,
+    N.nota2,
+    N.nota3,
+    calcularMedia(N.nota1, N.nota2, N.nota3) AS media_resultado
+FROM
+    Notas AS N
+JOIN
+    Alunos AS A ON N.aluno_id = A.aluno_id;
